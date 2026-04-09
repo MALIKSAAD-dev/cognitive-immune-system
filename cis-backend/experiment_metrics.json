@@ -1,0 +1,25 @@
+{
+  "m1_cdr_conditional": 0.0,
+  "m1_cdr_conditional_ci": [
+    0,
+    0.2153
+  ],
+  "m1_cdr_conditional_detected": 0,
+  "m1_cdr_conditional_total": 14,
+  "m2_fpr": 0.0,
+  "m2_ci": [
+    0,
+    0.037
+  ],
+  "m2_false_positives": 0,
+  "m2_total": 100,
+  "m3_baseline_accuracy": 0.8772,
+  "m3_cis_accuracy": 0.8509,
+  "m5_avg_baseline_latency_ms": 1482,
+  "m5_avg_cis_latency_ms": 27050,
+  "publishable": false,
+  "candidates_scanned": 500,
+  "grp_a": 14,
+  "grp_b": 100,
+  "total_time_seconds": 4749.9
+}

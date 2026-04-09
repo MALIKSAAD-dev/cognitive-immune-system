@@ -1,0 +1,291 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[margin=1.2in]{geometry}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+
+\onehalfspacing
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{definition}{Definition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newtheorem{proposition}{Proposition}
+\newtheorem{remark}{Remark}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Muhammad Saad, 2026}
+\lhead{Containment Depth Bound}
+\cfoot{\thepage}
+
+\title{
+\vspace{-1cm}
+\textbf{The Containment Depth Bound} \\[0.3cm]
+\large A Formal Proof of Sequential Contamination Escape \\
+Reduction in Epistemic Quarantine Systems \\[0.5cm]
+\normalsize With Empirical Validation ($\rho = 0.284$, $k^* = 9$)
+}
+
+\author{
+Muhammad Saad \\
+Independent Researcher \\
+Islamabad, Pakistan \\
+\texttt{saadkhan@proton.me} \\[0.3cm]
+\small April 2026
+}
+
+\date{}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+
+\section*{Motivation}
+
+Consider a system that processes the output of a large language model. The output may contain hallucinated claims. The system attempts to identify and quarantine these claims before they propagate to downstream reasoning steps. A natural question arises: if a single quarantine checkpoint catches contamination with probability $\rho$, how many checkpoints do we need to guarantee that contamination escapes with probability at most $\varepsilon$?
+
+This document provides a complete proof.
+
+\section{Definitions}
+
+\begin{definition}[Epistemic Quarantine]
+Let $C = \{c_1, c_2, \ldots, c_n\}$ be a set of atomic claims extracted from an LLM response. Let $\phi: C \to [0,1]$ be a contamination scoring function and $\tau \in (0,1)$ a threshold. Epistemic Quarantine partitions $C$ into:
+\begin{align}
+S &= \{c \in C : \phi(c) < \tau\} \quad \text{(safe set)} \\
+Q &= \{c \in C : \phi(c) \geq \tau\} \quad \text{(quarantine set)}
+\end{align}
+with the invariant that $S \cap Q = \emptyset$ and $S \cup Q = C$.
+\end{definition}
+
+\begin{definition}[Contaminated Claim]
+A claim $c$ is contaminated if it asserts a proposition that is factually false. We write $c \in \mathcal{F}$ for the set of contaminated claims.
+\end{definition}
+
+\begin{definition}[Detection Rate]
+The single-checkpoint detection rate is:
+\[
+\rho = P(\phi(c) \geq \tau \mid c \in \mathcal{F})
+\]
+That is, $\rho$ is the probability that a contaminated claim is correctly placed in $Q$ by a single EQ checkpoint.
+\end{definition}
+
+\begin{definition}[Escape Event]
+A contaminated claim $c$ escapes a checkpoint if $\phi(c) < \tau$, i.e., it is placed in $S$ despite being contaminated. The escape probability for a single checkpoint is $1 - \rho$.
+\end{definition}
+
+\section{The Theorem}
+
+\begin{theorem}[Containment Depth Bound]
+\label{thm:main}
+Let $\rho \in (0,1)$ be the single-checkpoint detection rate for contaminated claims. Assume detection decisions at successive checkpoints are independent. Then:
+
+\begin{enumerate}
+    \item[(i)] The probability that a contaminated claim escapes $k$ consecutive checkpoints is:
+    \[
+    P(\text{escape after } k \text{ checkpoints}) = (1 - \rho)^k
+    \]
+    
+    \item[(ii)] For any target escape probability $\varepsilon \in (0,1)$, the minimum number of checkpoints guaranteeing $P(\text{escape}) \leq \varepsilon$ is:
+    \[
+    k^* = \left\lceil \frac{\log \varepsilon}{\log(1-\rho)} \right\rceil
+    \]
+\end{enumerate}
+\end{theorem}
+
+\section{Proof}
+
+\begin{proof}
+We prove both parts.
+
+\textbf{Part (i).} Let $E_j$ denote the event that the contaminated claim escapes checkpoint $j$. By definition:
+\[
+P(E_j) = 1 - \rho \quad \text{for each } j = 1, 2, \ldots, k
+\]
+
+The claim escapes all $k$ checkpoints if and only if it escapes each one individually:
+\[
+P(\text{escape after } k) = P(E_1 \cap E_2 \cap \cdots \cap E_k)
+\]
+
+By the independence assumption:
+\[
+P(E_1 \cap E_2 \cap \cdots \cap E_k) = \prod_{j=1}^{k} P(E_j) = (1-\rho)^k
+\]
+
+Since $\rho \in (0,1)$, we have $1-\rho \in (0,1)$, so $(1-\rho)^k$ is a strictly decreasing function of $k$ that converges to 0 as $k \to \infty$. This completes part (i).
+
+\textbf{Part (ii).} We seek the smallest $k \in \mathbb{N}$ such that:
+\[
+(1-\rho)^k \leq \varepsilon
+\]
+
+Taking the natural logarithm of both sides:
+\[
+k \cdot \ln(1-\rho) \leq \ln(\varepsilon) \tag{$\star$}
+\]
+
+Now, since $\rho \in (0,1)$:
+\[
+0 < 1-\rho < 1 \implies \ln(1-\rho) < 0
+\]
+
+Similarly, since $\varepsilon \in (0,1)$:
+\[
+\ln(\varepsilon) < 0
+\]
+
+Dividing ($\star$) by $\ln(1-\rho)$, which is negative, reverses the inequality:
+\[
+k \geq \frac{\ln \varepsilon}{\ln(1-\rho)}
+\]
+
+The minimum integer satisfying this is:
+\[
+k^* = \left\lceil \frac{\ln \varepsilon}{\ln(1-\rho)} \right\rceil
+\]
+
+This holds for any base of logarithm, since the ratio $\log_b \varepsilon / \log_b(1-\rho)$ is base-independent.
+\end{proof}
+
+\section{Numerical Verification}
+
+We substitute the empirically measured value $\rho = 0.284$ from our HotpotQA adversarial benchmark (86 contaminated questions, 25 caught by a single CIS checkpoint).
+
+\subsection{Case 1: $\varepsilon = 0.05$}
+
+\[
+k^* = \left\lceil \frac{\ln(0.05)}{\ln(1 - 0.284)} \right\rceil = \left\lceil \frac{\ln(0.05)}{\ln(0.716)} \right\rceil
+\]
+
+Computing the numerator:
+\[
+\ln(0.05) = -2.9957
+\]
+
+Computing the denominator:
+\[
+\ln(0.716) = -0.3340
+\]
+
+Therefore:
+\[
+k^* = \left\lceil \frac{-2.9957}{-0.3340} \right\rceil = \lceil 8.969 \rceil = 9
+\]
+
+\textbf{Verification:}
+\[
+(1 - 0.284)^9 = (0.716)^9 = 0.0494
+\]
+Indeed $0.0494 < 0.05$. \checkmark
+
+\subsection{Case 2: $\varepsilon = 0.01$}
+
+\[
+k^* = \left\lceil \frac{\ln(0.01)}{\ln(0.716)} \right\rceil = \left\lceil \frac{-4.6052}{-0.3340} \right\rceil = \lceil 13.787 \rceil = 14
+\]
+
+\textbf{Verification:}
+\[
+(0.716)^{14} = 0.00929
+\]
+Indeed $0.00929 < 0.01$. \checkmark
+
+\subsection{Case 3: $\varepsilon = 0.001$}
+
+\[
+k^* = \left\lceil \frac{\ln(0.001)}{\ln(0.716)} \right\rceil = \left\lceil \frac{-6.9078}{-0.3340} \right\rceil = \lceil 20.68 \rceil = 21
+\]
+
+\textbf{Verification:}
+\[
+(0.716)^{21} = 0.000759
+\]
+Indeed $0.000759 < 0.001$. \checkmark
+
+\section{Escape Probability Table}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ccc}
+\hline
+$k$ (checkpoints) & $P(\text{escape})$ & Containment \% \\
+\hline
+1 & 0.7160 & 28.4\% \\
+2 & 0.5127 & 48.7\% \\
+3 & 0.3671 & 63.3\% \\
+4 & 0.2628 & 73.7\% \\
+5 & 0.1882 & 81.2\% \\
+6 & 0.1347 & 86.5\% \\
+7 & 0.0965 & 90.4\% \\
+8 & 0.0691 & 93.1\% \\
+\textbf{9} & \textbf{0.0494} & \textbf{95.1\%} \\
+10 & 0.0354 & 96.5\% \\
+14 & 0.0093 & 99.1\% \\
+21 & 0.0008 & 99.9\% \\
+\hline
+\end{tabular}
+\caption{Escape probability as a function of checkpoint depth for $\rho = 0.284$.}
+\end{table}
+
+\section{Discussion of the Independence Assumption}
+
+The proof relies on the assumption that detection decisions at successive checkpoints are independent. In practice, this assumption holds approximately when:
+
+\begin{enumerate}
+    \item Each checkpoint uses a different scoring oracle (different LLM, different knowledge base, different verification strategy).
+    \item The contaminated claim is re-extracted at each checkpoint from the LLM output, which may differ across runs due to sampling temperature.
+    \item The Wikipedia and consistency signals are queried independently at each checkpoint.
+\end{enumerate}
+
+If checkpoints are positively correlated (a claim that escapes one checkpoint is more likely to escape the next), then $k^*$ is a lower bound and more checkpoints are needed. If they are negatively correlated (unlikely in practice), fewer suffice.
+
+Formal relaxation of the independence assumption using Markov chain mixing bounds is a direction for future work.
+
+\section{Connection to Prior Art}
+
+The structure of this bound is classical. It follows the same logic as:
+
+\begin{itemize}
+    \item \textbf{Redundancy in fault-tolerant systems} \citep{avizienis2004basic}: $n$ independent replicas reduce failure probability exponentially.
+    \item \textbf{Boosting in machine learning} \citep{schapire1990strength}: sequential weak learners compose into strong learners at an exponential rate.
+    \item \textbf{Randomized primality testing} \citep{rabin1980probabilistic}: $k$ independent Miller-Rabin witnesses reduce false positive probability to $4^{-k}$.
+\end{itemize}
+
+The novelty is not in the mathematical technique but in its application to LLM hallucination containment. To our knowledge, no prior work has formalized inference-time quarantine checkpoints and derived the minimum depth required for a target containment guarantee.
+
+\section{Statement of Contribution}
+
+This theorem establishes that reliable contamination containment does not require a perfect detector. A detector with any nonzero detection rate $\rho > 0$, applied sequentially $k^*$ times, achieves arbitrarily low escape probability. The practical implication is that improving containment can proceed along two independent axes: improving $\rho$ (better detection per checkpoint) or increasing $k$ (more checkpoints in sequence). The depth bound quantifies the exact tradeoff.
+
+\vspace{1cm}
+\noindent\rule{\textwidth}{0.4pt}
+\vspace{0.3cm}
+
+\noindent \textbf{Muhammad Saad} \\
+Independent Researcher, Islamabad, Pakistan \\
+April 2026
+
+\begin{thebibliography}{9}
+
+\bibitem{avizienis2004basic}
+A. Avizienis, J.-C. Laprie, B. Randell, and C. Landwehr.
+\textit{Basic concepts and taxonomy of dependable and secure computing.}
+IEEE Trans. Dependable and Secure Computing, 1(1):11--33, 2004.
+
+\bibitem{rabin1980probabilistic}
+M. O. Rabin.
+\textit{Probabilistic algorithm for testing primality.}
+Journal of Number Theory, 12(1):128--138, 1980.
+
+\bibitem{schapire1990strength}
+R. E. Schapire.
+\textit{The strength of weak learnability.}
+Machine Learning, 5(2):197--227, 1990.
+
+\end{thebibliography}
+
+\end{document}

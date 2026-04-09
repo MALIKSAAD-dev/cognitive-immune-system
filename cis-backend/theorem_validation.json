@@ -1,0 +1,14 @@
+{
+  "eps_005": {
+    "k_star": 24,
+    "rho": 0.12,
+    "epsilon": 0.05,
+    "escape_probability_after_k": 0.046514
+  },
+  "eps_001": {
+    "k_star": 37,
+    "rho": 0.12,
+    "epsilon": 0.01,
+    "escape_probability_after_k": 0.008828
+  }
+}

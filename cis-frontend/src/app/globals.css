@@ -1,0 +1,137 @@
+@import "tailwindcss";
+
+:root {
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  
+  /* Luxury Minimalist Palette */
+  --cis-primary: #ffffff;
+  --cis-primary-light: #f4f4f5;
+  --cis-accent: #e4e4e7;
+  --cis-danger: #ef4444;       /* More subtle, pure red */
+  --cis-danger-light: #fca5a5;
+  --cis-warning: #f59e0b;
+  --cis-surface: #000000;      /* Deep Black */
+  --cis-surface-2: #050505;    /* Barely visible elevation */
+  --cis-surface-3: #0a0a0a;    
+  --cis-border: #1a1a1a;       /* Sharp, pristine borders */
+  --cis-text-primary: #f4f4f5;
+  --cis-text-secondary: #a1a1aa;
+  --cis-text-muted: #52525b;
+}
+
+/* Base resets */
+body {
+  background-color: var(--cis-surface);
+  color: var(--cis-text-primary);
+  font-family: var(--font-sans);
+  letter-spacing: -0.01em;     /* Adds to the ultra-premium feel */
+}
+
+/* Scrollbar structure */
+::-webkit-scrollbar {
+  width: 4px;                  /* Thinner, sleeker scrollbar */
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: var(--cis-surface);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--cis-border);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--cis-text-muted);
+}
+
+/* Premium Minimal Card Bounds */
+.glass-card {
+  background: var(--cis-surface-2);
+  border: 1px solid var(--cis-border);
+  border-radius: 8px; /* Sharper corners for modern luxury appeal */
+  box-shadow: 0 4px 20px -10px rgba(0, 0, 0, 0.5); /* Ambient shadow */
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.glass-card-hover:hover {
+  border-color: #3f3f46;
+  background: #09090b;
+}
+
+/* Delicate Pulse Animation */
+@keyframes delicate-pulse {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 0.2; }
+}
+.animate-cis-pulse {
+  animation: delicate-pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Shimmer Loading Effect */
+@keyframes lux-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--cis-surface-2) 25%,
+    var(--cis-border) 50%,
+    var(--cis-surface-2) 75%
+  );
+  background-size: 200% 100%;
+  animation: lux-shimmer 1.5s ease-in-out infinite;
+}
+
+/* Soft gradients */
+.gradient-text {
+  /* Using a very soft silver gradient instead of neon */
+  background: linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Bar styles */
+.score-bar {
+  height: 3px;
+  border-radius: 0px;
+  background: var(--cis-surface-3);
+  overflow: hidden;
+}
+.score-bar-fill {
+  height: 100%;
+  border-radius: 0px;
+  transition: width 0.7s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+/* Layout animations */
+@keyframes node-appear {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.graph-node {
+  animation: node-appear 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+}
+
+.stagger-children > * {
+  opacity: 0;
+  animation: fade-in-up 0.5s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+}
+.stagger-children > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.1s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.2s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.3s; }
+.stagger-children > *:nth-child(7) { animation-delay: 0.35s; }
+.stagger-children > *:nth-child(8) { animation-delay: 0.4s; }
+.stagger-children > *:nth-child(9) { animation-delay: 0.45s; }
+.stagger-children > *:nth-child(10) { animation-delay: 0.5s; }
